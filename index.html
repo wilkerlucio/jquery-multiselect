@@ -1,13 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<html>
 	<head>
-		<title>JqueryMultiSelect Example</title>
-		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+		<title>jQuery MultiSelect Plugin</title>
+		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+		<link rel="stylesheet" type="text/css" href="stylesheets/main.css" media="all" />
 		<link rel="stylesheet" type="text/css" href="http://github.com/wilkerlucio/jquery-multiselect/raw/master/css/jquery.multiselect.css" media="all">
 		<script type="text/javascript" src="http://github.com/wilkerlucio/jquery-multiselect/raw/master/vendor/jquery-1.4.2.min.js"></script>
-		<script type="text/javascript" src="http://github.com/wilkerlucio/jquery-multiselect/raw/master/js/jquery.multiselect.js"></script>
+		<script type="text/javascript" src="http://github.com/wilkerlucio/jquery-multiselect/raw/master/dist/jquery.multiselect.0.1.2.min.js"></script>
 		<script type="text/javascript">
-			names = [
+			var names = [
 				"Alejandra Pizarnik",
 				"Alicia Partnoy",
 				"Andres Rivera",
@@ -32,11 +33,35 @@
 			]
 
 			$(function() {
-				$("#sample-tags").multiselect({completions: names});
+				$("#sample-tags").multiselect();
+				$("#tags-complete").multiselect({completions: names});
+				$("#tags-complete-more").multiselect({completions: names, max_complete_results: 10});
 			});
 		</script>
 	</head>
 	<body>
-		<input type="text" name="tags" id="sample-tags" value="initial,values" />
+		<a href="http://github.com/wilkerlucio/jquery-multiselect"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+		
+		<div id="container">
+			<div class="download">
+				<a href="http://github.com/wilkerlucio/jquery-multiselect/zipball/master"><img border="0" width="90" src="http://github.com/images/modules/download/zip.png" /></a>
+				<a href="http://github.com/wilkerlucio/jquery-multiselect/tarball/master"><img border="0" width="90" src="http://github.com/images/modules/download/tar.png" /></a>
+			</div>
+			
+			<h1>jQuery MultiSelect Plugin</h1>
+			
+			<h2>About</h2>
+			
+			<h2>Requirements</h2>
+			<p>jQuery MultiSelect requires jQuery 1.4.2+</p>
+			
+			<h2>Usage</h2>
+			<h3>Simple usage</h3>
+			<input type="text" id="sample-tags" name="tags" />
+			<h3>With Autocomplete</h3>
+			<input type="text" id="tags-complete" name="tags_complete" />
+			<h3>More results on Autocomplete</h3>
+			<input type="text" id="tags-complete-more" name="tags_complete_more" />
+		</div>
 	</body>
 </html>
