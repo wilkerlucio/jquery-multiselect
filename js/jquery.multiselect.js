@@ -298,7 +298,8 @@
       };
     }(this.search, this, [])));
     this.multiselect.observer.bind(KEY.UP, (function(__this) {
-      var __func = function() {
+      var __func = function(e) {
+        e.preventDefault();
         return this.navigate_up();
       };
       return (function() {
@@ -306,7 +307,8 @@
       });
     })(this));
     return this.multiselect.observer.bind(KEY.DOWN, (function(__this) {
-      var __func = function() {
+      var __func = function(e) {
+        e.preventDefault();
         return this.navigate_down();
       };
       return (function() {

@@ -223,8 +223,8 @@
       @input.keypress(@search <- this)
       @input.keyup(@search <- this)
       @input.change(@search <- this)
-      @multiselect.observer.bind KEY.UP, => @navigate_up()
-      @multiselect.observer.bind KEY.DOWN, => @navigate_down()
+      @multiselect.observer.bind KEY.UP, (e) => e.preventDefault(); @navigate_up()
+      @multiselect.observer.bind KEY.DOWN, (e) => e.preventDefault(); @navigate_down()
     
     search: ->
       return if @input.val().trim() == @query # dont do operation if query is same
