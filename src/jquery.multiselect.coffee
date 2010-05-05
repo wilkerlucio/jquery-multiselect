@@ -96,7 +96,7 @@
       a.mouseover -> $(this).addClass("bit-hover")
       a.mouseout -> $(this).removeClass("bit-hover")
       a.data("value", value)
-      a.html(value)
+      a.html(value.entitizeHTML())
       
       close: $(document.createElement("a"))
       close.addClass("closebutton")
@@ -153,3 +153,8 @@
     $(this).each ->
       new $.MultiSelect(this, options)
 )(jQuery)
+
+$.extend String.prototype, {
+  entitizeHTML: -> return this.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  unentitizeHTML: -> return this.replace(/&lt;/g,'<').replace(/&gt;/g,'>')
+};

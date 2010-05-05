@@ -122,7 +122,7 @@
       return $(this).removeClass("bit-hover");
     });
     a.data("value", value);
-    a.html(value);
+    a.html(value.entitizeHTML());
     close = $(document.createElement("a"));
     close.addClass("closebutton");
     close.click((function(__this) {
@@ -205,3 +205,11 @@
   };
   return $.fn.multiselect;
 })(jQuery);
+$.extend(String.prototype, {
+  entitizeHTML: function entitizeHTML() {
+    return this.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  },
+  unentitizeHTML: function unentitizeHTML() {
+    return this.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  }
+});
