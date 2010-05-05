@@ -92,6 +92,7 @@
           @add value if value.present()
 
         @input.val("")
+        @autocomplete.search()
     
     add_and_reset: ->    
       if @autocomplete.value()
@@ -103,6 +104,7 @@
       return if $.inArray(value, @values) > -1
       return if value.blank()
       
+      value = value.trim()
       @values.push(value)
       
       a: $(document.createElement("a"))

@@ -111,7 +111,8 @@
           this.add(value);
         }
       }
-      return this.input.val("");
+      this.input.val("");
+      return this.autocomplete.search();
     }
   };
   $.MultiSelect.prototype.add_and_reset = function add_and_reset() {
@@ -129,6 +130,7 @@
     if (value.blank()) {
       return null;
     }
+    value = value.trim();
     this.values.push(value);
     a = $(document.createElement("a"));
     a.addClass("bit bit-box");
