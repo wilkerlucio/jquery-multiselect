@@ -54,6 +54,7 @@
   $.MultiSelect.prototype.initialize_events = function initialize_events() {
     // create helpers
     this.selection = new $.MultiSelect.Selection(this.input);
+    this.resizable = new $.MultiSelect.ResizableInput(this.input);
     this.observer = new $.MultiSelect.InputObserver(this.input);
     // prevent container click to put carret at end
     this.input.click((function(__this) {
@@ -149,6 +150,7 @@
   $.MultiSelect.prototype.refresh_hidden = function refresh_hidden() {
     return this.hidden.val(this.values.join(this.options.separator));
   };
+  // Input Observer Helper
   $.MultiSelect.InputObserver = function InputObserver(element) {
     this.input = $(element);
     this.input.keydown((function(func, obj, args) {
@@ -181,6 +183,8 @@
     }
     return _a;
   };
+  // Selection Helper
+  // TODO: support IE
   $.MultiSelect.Selection = function Selection(element) {
     this.input = $(element)[0];
     return this;
@@ -196,6 +200,52 @@
   };
   $.MultiSelect.Selection.prototype.set_caret_at_end = function set_caret_at_end() {
     return this.set_caret(this.input.value.length);
+  };
+  // Resizable Input Helper
+  $.MultiSelect.ResizableInput = function ResizableInput(element) {
+    this.input = $(element);
+    this.create_measurer();
+    this.input.keypress((function(func, obj, args) {
+      return function() {
+        return func.apply(obj, args.concat(Array.prototype.slice.call(arguments, 0)));
+      };
+    }(this.set_width, this, [])));
+    this.input.keyup((function(func, obj, args) {
+      return function() {
+        return func.apply(obj, args.concat(Array.prototype.slice.call(arguments, 0)));
+      };
+    }(this.set_width, this, [])));
+    this.input.change((function(func, obj, args) {
+      return function() {
+        return func.apply(obj, args.concat(Array.prototype.slice.call(arguments, 0)));
+      };
+    }(this.set_width, this, [])));
+    return this;
+  };
+  $.MultiSelect.ResizableInput.prototype.create_measurer = function create_measurer() {
+    var measurer;
+    if ($("#__jquery_multiselect_measurer")[0] === undefined) {
+      measurer = $(document.createElement("div"));
+      measurer.attr("id", "__jquery_multiselect_measurer");
+      measurer.css({
+        position: "absolute",
+        left: "-1000px",
+        top: "-1000px"
+      });
+      $(document.body).append(measurer);
+    }
+    this.measurer = $("#__jquery_multiselect_measurer:first");
+    return this.measurer.css({
+      fontSize: this.input.css('font-size'),
+      fontFamily: this.input.css('font-family')
+    });
+  };
+  $.MultiSelect.ResizableInput.prototype.calculate_width = function calculate_width() {
+    this.measurer.html(this.input.val().entitizeHTML() + 'MM');
+    return parseInt(this.measurer.css("width"));
+  };
+  $.MultiSelect.ResizableInput.prototype.set_width = function set_width() {
+    return this.input.css("width", this.calculate_width() + "px");
   };
   $.fn.multiselect = function multiselect(options) {
     options = (typeof options !== "undefined" && options !== null) ? options : {};

@@ -58,6 +58,7 @@
     initialize_events: ->
       # create helpers
       @selection = new $.MultiSelect.Selection(@input)
+      @resizable = new $.MultiSelect.ResizableInput(@input)
       @observer = new $.MultiSelect.InputObserver(@input)
       
       # prevent container click to put carret at end
@@ -116,7 +117,8 @@
     
     refresh_hidden: ->
       @hidden.val(@values.join(@options.separator))
-    
+  
+  # Input Observer Helper
   class $.MultiSelect.InputObserver
     constructor: (element) ->
       @input: $(element)
@@ -132,6 +134,8 @@
         keys: [keys] unless keys.push
         callback(e) if $.inArray(e.keyCode, keys) > -1
   
+  # Selection Helper
+  # TODO: support IE
   class $.MultiSelect.Selection
     constructor: (element) ->
       @input: $(element)[0]
@@ -146,6 +150,40 @@
     
     set_caret_at_end: ->
       @set_caret(@input.value.length)
+  
+  # Resizable Input Helper
+  class $.MultiSelect.ResizableInput
+    constructor: (element) ->
+      @input: $(element)
+      @create_measurer()
+      @input.keypress(@set_width <- this)
+      @input.keyup(@set_width <- this)
+      @input.change(@set_width <- this)
+    
+    create_measurer: ->
+      if $("#__jquery_multiselect_measurer")[0] == undefined
+        measurer: $(document.createElement("div"))
+        measurer.attr("id", "__jquery_multiselect_measurer")
+        measurer.css {
+          position: "absolute"
+          left: "-1000px"
+          top: "-1000px"
+        }
+        
+        $(document.body).append(measurer)
+      
+      @measurer: $("#__jquery_multiselect_measurer:first")
+      @measurer.css {
+        fontSize: @input.css('font-size')
+        fontFamily: @input.css('font-family')
+      }
+    
+    calculate_width: ->
+      @measurer.html(@input.val().entitizeHTML() + 'MM')
+      parseInt(@measurer.css("width"))
+    
+    set_width: ->
+      @input.css("width", @calculate_width() + "px")
   
   $.fn.multiselect = (options) ->
     options ?= {}
