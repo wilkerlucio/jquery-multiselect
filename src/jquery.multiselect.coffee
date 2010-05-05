@@ -94,9 +94,9 @@
         @input.val("")
         @autocomplete.search()
     
-    add_and_reset: ->    
-      if @autocomplete.value()
-        @add(@autocomplete.value())
+    add_and_reset: ->
+      if @autocomplete.val()
+        @add(@autocomplete.val())
         @input.val("")
     
     # add new element
@@ -191,9 +191,9 @@
         fontFamily: @input.css('font-family')
       }
     
-    calculate_width: ->
+    calculate_width: ->  
       @measurer.html(@input.val().entitizeHTML() + 'MM')
-      parseInt(@measurer.css("width"))
+      @measurer.innerWidth()
     
     set_width: ->
       @input.css("width", @calculate_width() + "px")
@@ -212,6 +212,7 @@
       @container: $(document.createElement("div"))
       @container.addClass("jquery-multiselect-autocomplete")
       @container.css("width", @multiselect.container.outerWidth())
+      @container.css("display", "none")
       
       @container.append(@def)
       
@@ -236,6 +237,7 @@
       @current: 0
       
       if @query.present()
+        @container.css("display", "block")
         @matches: @matching_completions(@query)
         
         def: @create_item("Add <em>" + @query + "</em>")
@@ -248,6 +250,7 @@
         @matches.unshift(@query)
         @select_index(0)
       else
+        @container.css("display", "none")
         @query: null
     
     select_index: (index) ->
@@ -277,7 +280,7 @@
       @list.append(item)
       item
     
-    value: ->
+    val: ->
       @matches[@current]
     
     highlight: (text, highlight) ->
@@ -306,10 +309,11 @@
 )(jQuery)
 
 $.extend String.prototype, {
-  entitizeHTML: -> return this.replace(/</g,'&lt;').replace(/>/g,'&gt;')
-  unentitizeHTML: -> return this.replace(/&lt;/g,'<').replace(/&gt;/g,'>')
-  blank: -> return this.trim().length == 0
-  present: -> return not @blank()
+  trim: -> this.replace(/[\r\n\s]/g, '')
+  entitizeHTML: -> this.replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  unentitizeHTML: -> this.replace(/&lt;/g,'<').replace(/&gt;/g,'>')
+  blank: -> this.trim().length == 0
+  present: -> not @blank()
 };
 
 RegExp.escape: (str) ->

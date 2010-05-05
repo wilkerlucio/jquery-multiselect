@@ -116,8 +116,8 @@
     }
   };
   $.MultiSelect.prototype.add_and_reset = function add_and_reset() {
-    if (this.autocomplete.value()) {
-      this.add(this.autocomplete.value());
+    if (this.autocomplete.val()) {
+      this.add(this.autocomplete.val());
       return this.input.val("");
     }
   };
@@ -258,7 +258,7 @@
   };
   $.MultiSelect.ResizableInput.prototype.calculate_width = function calculate_width() {
     this.measurer.html(this.input.val().entitizeHTML() + 'MM');
-    return parseInt(this.measurer.css("width"));
+    return this.measurer.innerWidth();
   };
   $.MultiSelect.ResizableInput.prototype.set_width = function set_width() {
     return this.input.css("width", this.calculate_width() + "px");
@@ -277,6 +277,7 @@
     this.container = $(document.createElement("div"));
     this.container.addClass("jquery-multiselect-autocomplete");
     this.container.css("width", this.multiselect.container.outerWidth());
+    this.container.css("display", "none");
     this.container.append(this.def);
     this.list = $(document.createElement("ul"));
     this.list.addClass("feed");
@@ -329,6 +330,7 @@
     // clear list
     this.current = 0;
     if (this.query.present()) {
+      this.container.css("display", "block");
       this.matches = this.matching_completions(this.query);
       def = this.create_item("Add <em>" + this.query + "</em>");
       def.mouseover((function(func, obj, args) {
@@ -349,6 +351,7 @@
       this.matches.unshift(this.query);
       return this.select_index(0);
     } else {
+      this.container.css("display", "none");
       this.query = null;
       return this.query;
     }
@@ -394,7 +397,7 @@
     this.list.append(item);
     return item;
   };
-  $.MultiSelect.AutoComplete.prototype.value = function value() {
+  $.MultiSelect.AutoComplete.prototype.val = function val() {
     return this.matches[this.current];
   };
   $.MultiSelect.AutoComplete.prototype.highlight = function highlight(text, highlight) {
@@ -436,6 +439,9 @@
   return $.fn.multiselect;
 })(jQuery);
 $.extend(String.prototype, {
+  trim: function trim() {
+    return this.replace(/[\r\n\s]/g, '');
+  },
   entitizeHTML: function entitizeHTML() {
     return this.replace(/</g, '&lt;').replace(/>/g, '&gt;');
   },
