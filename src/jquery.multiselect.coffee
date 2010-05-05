@@ -158,7 +158,6 @@
         callback(e) if $.inArray(e.keyCode, keys) > -1
   
   # Selection Helper
-  # TODO: support IE
   class $.MultiSelect.Selection
     constructor: (element) ->
       @input: $(element)[0]

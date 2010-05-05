@@ -221,7 +221,6 @@
     return _a;
   };
   // Selection Helper
-  // TODO: support IE
   $.MultiSelect.Selection = function Selection(element) {
     this.input = $(element)[0];
     return this;
