@@ -36,6 +36,7 @@
     this.input = $(element);
     this.initialize_elements();
     this.initialize_events();
+    this.parse_value();
     return this;
   };
   $.MultiSelect.prototype.initialize_elements = function initialize_elements() {
@@ -71,18 +72,7 @@
     // create element when place separator or paste
     this.input.keyup((function(__this) {
       var __func = function() {
-        var _a, _b, _c, value, values;
-        values = this.input.val().split(this.options.separator);
-        if (values.length > 1) {
-          _b = values;
-          for (_a = 0, _c = _b.length; _a < _c; _a++) {
-            value = _b[_a];
-            if (value.length > 0) {
-              this.add(value);
-            }
-          }
-          return this.input.val("");
-        }
+        return this.parse_value(1);
       };
       return (function() {
         return __func.apply(__this, arguments);
@@ -108,6 +98,21 @@
         return __func.apply(__this, arguments);
       });
     })(this));
+  };
+  $.MultiSelect.prototype.parse_value = function parse_value(min) {
+    var _a, _b, _c, value, values;
+    min = (typeof min !== "undefined" && min !== null) ? min : 0;
+    values = this.input.val().split(this.options.separator);
+    if (values.length > min) {
+      _b = values;
+      for (_a = 0, _c = _b.length; _a < _c; _a++) {
+        value = _b[_a];
+        if (value.present()) {
+          this.add(value);
+        }
+      }
+      return this.input.val("");
+    }
   };
   $.MultiSelect.prototype.add_and_reset = function add_and_reset() {
     if (this.autocomplete.value()) {

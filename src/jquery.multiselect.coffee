@@ -38,6 +38,7 @@
       @input: $(element)
       @initialize_elements()
       @initialize_events()
+      @parse_value()
     
     initialize_elements: ->
       # hidden input to hold real value
@@ -70,13 +71,7 @@
       
       # create element when place separator or paste
       @input.keyup =>
-        values: @input.val().split(@options.separator)
-        
-        if values.length > 1
-          for value in values
-            @add value if value.length > 0
-          
-          @input.val("")
+        @parse_value(1)
       
       # focus input and set carret at and
       @container.click =>
@@ -87,6 +82,16 @@
       @observer.bind [KEY.TAB, KEY.RETURN], (e) =>
         e.preventDefault()
         @add_and_reset()
+    
+    parse_value: (min) ->
+      min ?= 0
+      values: @input.val().split(@options.separator)
+
+      if values.length > min
+        for value in values
+          @add value if value.present()
+
+        @input.val("")
     
     add_and_reset: ->    
       if @autocomplete.value()
