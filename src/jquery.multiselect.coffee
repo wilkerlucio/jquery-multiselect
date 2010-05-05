@@ -14,6 +14,7 @@
 
 (($) ->
   KEY: {
+    BACKSPACE: 8
     TAB: 9
     RETURN: 13
     ESCAPE: 27
@@ -82,6 +83,14 @@
       @observer.bind [KEY.TAB, KEY.RETURN], (e) =>
         e.preventDefault()
         @add_and_reset()
+      
+      @observer.bind [KEY.BACKSPACE], (e) =>
+        return if @values.length <= 0
+        caret = @selection.get_caret()
+        
+        if caret[0] == 0 and caret[1] == 0
+          e.preventDefault()
+          @remove(@values[@values.length - 1])
     
     parse_value: (min) ->
       min ?= 0
@@ -118,7 +127,6 @@
       close.addClass("closebutton")
       close.click =>
         @remove(a.data("value"))
-        a.remove()
       a.append(close)
       
       @input_wrapper.before(a)
@@ -126,6 +134,8 @@
     
     remove: (value) ->
       @values: $.grep @values, (v) -> v != value
+      @container.find("a.bit-box").each ->
+        $(this).remove() if $(this).data("value") == value
       @refresh_hidden()
     
     refresh_hidden: ->

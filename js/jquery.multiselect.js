@@ -14,6 +14,7 @@
 (function($) {
   var KEY;
   KEY = {
+    BACKSPACE: 8,
     TAB: 9,
     RETURN: 13,
     ESCAPE: 27,
@@ -89,10 +90,26 @@
       });
     })(this));
     // add element on press TAB or RETURN
-    return this.observer.bind([KEY.TAB, KEY.RETURN], (function(__this) {
+    this.observer.bind([KEY.TAB, KEY.RETURN], (function(__this) {
       var __func = function(e) {
         e.preventDefault();
         return this.add_and_reset();
+      };
+      return (function() {
+        return __func.apply(__this, arguments);
+      });
+    })(this));
+    return this.observer.bind([KEY.BACKSPACE], (function(__this) {
+      var __func = function(e) {
+        var caret;
+        if (this.values.length <= 0) {
+          return null;
+        }
+        caret = this.selection.get_caret();
+        if (caret[0] === 0 && caret[1] === 0) {
+          e.preventDefault();
+          return this.remove(this.values[this.values.length - 1]);
+        }
       };
       return (function() {
         return __func.apply(__this, arguments);
@@ -146,8 +163,7 @@
     close.addClass("closebutton");
     close.click((function(__this) {
       var __func = function() {
-        this.remove(a.data("value"));
-        return a.remove();
+        return this.remove(a.data("value"));
       };
       return (function() {
         return __func.apply(__this, arguments);
@@ -160,6 +176,11 @@
   $.MultiSelect.prototype.remove = function remove(value) {
     this.values = $.grep(this.values, function(v) {
       return v !== value;
+    });
+    this.container.find("a.bit-box").each(function() {
+      if ($(this).data("value") === value) {
+        return $(this).remove();
+      }
     });
     return this.refresh_hidden();
   };
