@@ -474,7 +474,7 @@
 })(jQuery);
 $.extend(String.prototype, {
   trim: function trim() {
-    return this.replace(/[\r\n\s]/g, '');
+    return this.replace(/^[\r\n\s]/g, '').replace(/[\r\n\s]$/g, '');
   },
   entitizeHTML: function entitizeHTML() {
     return this.replace(/</g, '&lt;').replace(/>/g, '&gt;');

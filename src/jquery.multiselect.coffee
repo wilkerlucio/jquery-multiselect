@@ -330,7 +330,7 @@
 )(jQuery)
 
 $.extend String.prototype, {
-  trim: -> this.replace(/[\r\n\s]/g, '')
+  trim: -> this.replace(/^[\r\n\s]/g, '').replace(/[\r\n\s]$/g, '')
   entitizeHTML: -> this.replace(/</g,'&lt;').replace(/>/g,'&gt;')
   unentitizeHTML: -> this.replace(/&lt;/g,'<').replace(/&gt;/g,'>')
   blank: -> this.trim().length == 0
