@@ -7,12 +7,36 @@
 		<script type="text/javascript" src="http://github.com/wilkerlucio/jquery-multiselect/raw/master/vendor/jquery-1.4.2.min.js"></script>
 		<script type="text/javascript" src="http://github.com/wilkerlucio/jquery-multiselect/raw/master/js/jquery.multiselect.js"></script>
 		<script type="text/javascript">
+			names = [
+				"Alejandra Pizarnik",
+				"Alicia Partnoy",
+				"Andres Rivera",
+				"Antonio Porchia",
+				"Arturo Andres Roig",
+				"Felipe Pigna",
+				"Gustavo Nielsen",
+				"Hector German Oesterheld",
+				"Juan Carlos Portantiero",
+				"Juan L. Ortiz",
+				"Manuel Mujica Lainez",
+				"Manuel Puig",
+				"Mario Rodriguez Cobos",
+				"Olga Orozco",
+				"Osvaldo Tierra",
+				"Ricardo Piglia",
+				"Ricardo Rojas",
+				"Roberto Payro",
+				"Silvina Ocampo",
+				"Victoria Ocampo",
+				"Zuriel Barron"
+			]
+
 			$(function() {
-				$("#sample-tags").multiselect();
+				$("#sample-tags").multiselect({completions: names});
 			});
 		</script>
 	</head>
 	<body>
-		<input type="text" name="tags" id="sample-tags" />
+		<input type="text" name="tags" id="sample-tags" value="initial,values" />
 	</body>
 </html>
