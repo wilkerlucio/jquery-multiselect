@@ -1,0 +1,26 @@
+h1. jQuery MultiSelect
+
+h2. About
+
+jQuery MultiSelect provide an elegant way to handle multiple options on an input.
+To see examples go to "jQuery MultiSelect page":http://wilkerlucio.github.com/jquery-multiselect/
+
+h2. Instalation
+
+Just copy Javascripts, CSS and Image files in containing folders, see examples.
+
+h2. Requirements
+
+* jQuery 1.4+
+
+h2. Tested on
+
+* IE6+
+* Firefox
+* Safari
+* Chrome
+
+h2. TODO
+
+* Support for values independent from captions
+* Direct integration with select multiple
