@@ -227,7 +227,20 @@
     return this;
   };
   $.MultiSelect.Selection.prototype.get_caret = function get_caret() {
-    return [this.input.selectionStart, this.input.selectionEnd];
+    var r;
+    // For IE
+    if (document.selection) {
+      r = document.selection.createRange().duplicate();
+      r.moveEnd('character', this.input.value.length);
+      if (r.text === '') {
+        return [this.input.value.length, this.input.value.length];
+      } else {
+        return [this.input.value.lastIndexOf(r.text), this.input.value.lastIndexOf(r.text)];
+        // Others
+      }
+    } else {
+      return [this.input.selectionStart, this.input.selectionEnd];
+    }
   };
   $.MultiSelect.Selection.prototype.set_caret = function set_caret(begin, end) {
     end = (typeof end !== "undefined" && end !== null) ? end : begin;

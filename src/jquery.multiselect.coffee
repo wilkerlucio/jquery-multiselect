@@ -164,7 +164,18 @@
       @input: $(element)[0]
     
     get_caret: ->
-      [@input.selectionStart, @input.selectionEnd]
+      # For IE
+      if document.selection
+        r: document.selection.createRange().duplicate()
+        r.moveEnd('character', @input.value.length)
+        
+        if r.text == ''
+          [@input.value.length, @input.value.length]
+        else
+          [@input.value.lastIndexOf(r.text), @input.value.lastIndexOf(r.text)]
+      # Others
+      else
+        [@input.selectionStart, @input.selectionEnd]
     
     set_caret: (begin, end) ->
       end ?= begin
