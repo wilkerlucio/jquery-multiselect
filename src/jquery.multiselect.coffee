@@ -108,6 +108,7 @@
       if @autocomplete.val()
         @add(@autocomplete.val())
         @input.val("")
+        @autocomplete.search()
     
     # add new element
     add: (value) ->
@@ -271,6 +272,7 @@
         @matches.unshift(@query)
         @select_index(0)
       else
+        @matches: []
         @container.css("display", "none")
         @query: null
     

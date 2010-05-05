@@ -137,7 +137,8 @@
   $.MultiSelect.prototype.add_and_reset = function add_and_reset() {
     if (this.autocomplete.val()) {
       this.add(this.autocomplete.val());
-      return this.input.val("");
+      this.input.val("");
+      return this.autocomplete.search();
     }
   };
   // add new element
@@ -386,6 +387,7 @@
       this.matches.unshift(this.query);
       return this.select_index(0);
     } else {
+      this.matches = [];
       this.container.css("display", "none");
       this.query = null;
       return this.query;
