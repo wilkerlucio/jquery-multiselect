@@ -81,8 +81,9 @@
       
       # add element on press TAB or RETURN
       @observer.bind [KEY.TAB, KEY.RETURN], (e) =>
-        e.preventDefault()
-        @add_and_reset()
+        if @autocomplete.val()
+          e.preventDefault()
+          @add_and_reset()
       
       @observer.bind [KEY.BACKSPACE], (e) =>
         return if @values.length <= 0

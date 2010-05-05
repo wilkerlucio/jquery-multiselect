@@ -92,8 +92,10 @@
     // add element on press TAB or RETURN
     this.observer.bind([KEY.TAB, KEY.RETURN], (function(__this) {
       var __func = function(e) {
-        e.preventDefault();
-        return this.add_and_reset();
+        if (this.autocomplete.val()) {
+          e.preventDefault();
+          return this.add_and_reset();
+        }
       };
       return (function() {
         return __func.apply(__this, arguments);
