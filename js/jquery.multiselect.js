@@ -27,7 +27,9 @@
   };
   $.MultiSelect = function MultiSelect(element, options) {
     this.options = {
-      separator: ","
+      separator: ",",
+      completions: [],
+      max_complete_results: 5
     };
     $.extend(this.options, options || {});
     this.values = [];
@@ -56,6 +58,7 @@
     this.selection = new $.MultiSelect.Selection(this.input);
     this.resizable = new $.MultiSelect.ResizableInput(this.input);
     this.observer = new $.MultiSelect.InputObserver(this.input);
+    this.autocomplete = new $.MultiSelect.AutoComplete(this, this.options.completions);
     // prevent container click to put carret at end
     this.input.click((function(__this) {
       var __func = function(e) {
@@ -99,18 +102,26 @@
     return this.observer.bind([KEY.TAB, KEY.RETURN], (function(__this) {
       var __func = function(e) {
         e.preventDefault();
-        this.add(this.input.val());
-        return this.input.val("");
+        return this.add_and_reset();
       };
       return (function() {
         return __func.apply(__this, arguments);
       });
     })(this));
   };
+  $.MultiSelect.prototype.add_and_reset = function add_and_reset() {
+    if (this.autocomplete.value()) {
+      this.add(this.autocomplete.value());
+      return this.input.val("");
+    }
+  };
   // add new element
   $.MultiSelect.prototype.add = function add(value) {
     var a, close;
     if ($.inArray(value, this.values) > -1) {
+      return null;
+    }
+    if (value.blank()) {
       return null;
     }
     this.values.push(value);
@@ -140,11 +151,9 @@
     return this.refresh_hidden();
   };
   $.MultiSelect.prototype.remove = function remove(value) {
-    console.log(value);
     this.values = $.grep(this.values, function(v) {
       return v !== value;
     });
-    console.log(this.values);
     return this.refresh_hidden();
   };
   $.MultiSelect.prototype.refresh_hidden = function refresh_hidden() {
@@ -247,6 +256,168 @@
   $.MultiSelect.ResizableInput.prototype.set_width = function set_width() {
     return this.input.css("width", this.calculate_width() + "px");
   };
+  // AutoComplete Helper
+  $.MultiSelect.AutoComplete = function AutoComplete(multiselect, completions) {
+    this.multiselect = multiselect;
+    this.input = this.multiselect.input;
+    this.completions = completions;
+    this.matches = [];
+    this.create_elements();
+    this.bind_events();
+    return this;
+  };
+  $.MultiSelect.AutoComplete.prototype.create_elements = function create_elements() {
+    this.container = $(document.createElement("div"));
+    this.container.addClass("jquery-multiselect-autocomplete");
+    this.container.css("width", this.multiselect.container.outerWidth());
+    this.container.append(this.def);
+    this.list = $(document.createElement("ul"));
+    this.list.addClass("feed");
+    this.container.append(this.list);
+    return this.multiselect.container.after(this.container);
+  };
+  $.MultiSelect.AutoComplete.prototype.bind_events = function bind_events() {
+    this.input.keypress((function(func, obj, args) {
+      return function() {
+        return func.apply(obj, args.concat(Array.prototype.slice.call(arguments, 0)));
+      };
+    }(this.search, this, [])));
+    this.input.keyup((function(func, obj, args) {
+      return function() {
+        return func.apply(obj, args.concat(Array.prototype.slice.call(arguments, 0)));
+      };
+    }(this.search, this, [])));
+    this.input.change((function(func, obj, args) {
+      return function() {
+        return func.apply(obj, args.concat(Array.prototype.slice.call(arguments, 0)));
+      };
+    }(this.search, this, [])));
+    this.multiselect.observer.bind(KEY.UP, (function(__this) {
+      var __func = function() {
+        return this.navigate_up();
+      };
+      return (function() {
+        return __func.apply(__this, arguments);
+      });
+    })(this));
+    return this.multiselect.observer.bind(KEY.DOWN, (function(__this) {
+      var __func = function() {
+        return this.navigate_down();
+      };
+      return (function() {
+        return __func.apply(__this, arguments);
+      });
+    })(this));
+  };
+  $.MultiSelect.AutoComplete.prototype.search = function search() {
+    var _a, _b, def, i, item, option;
+    if (this.input.val().trim() === this.query) {
+      return null;
+    }
+    // dont do operation if query is same
+    this.query = this.input.val().trim();
+    this.list.html("");
+    // clear list
+    this.current = 0;
+    if (this.query.present()) {
+      this.matches = this.matching_completions(this.query);
+      def = this.create_item("Add <em>" + this.query + "</em>");
+      def.mouseover((function(func, obj, args) {
+        return function() {
+          return func.apply(obj, args.concat(Array.prototype.slice.call(arguments, 0)));
+        };
+      }(this.select_index, this, [0])));
+      _a = this.matches;
+      for (i = 0, _b = _a.length; i < _b; i++) {
+        option = _a[i];
+        item = this.create_item(this.highlight(option, this.query));
+        item.mouseover((function(func, obj, args) {
+          return function() {
+            return func.apply(obj, args.concat(Array.prototype.slice.call(arguments, 0)));
+          };
+        }(this.select_index, this, [i + 1])));
+      }
+      this.matches.unshift(this.query);
+      return this.select_index(0);
+    } else {
+      this.query = null;
+      return this.query;
+    }
+  };
+  $.MultiSelect.AutoComplete.prototype.select_index = function select_index(index) {
+    var items;
+    items = this.list.find("li");
+    items.removeClass("auto-focus");
+    items.filter(":eq(" + (index) + ")").addClass("auto-focus");
+    this.current = index;
+    return this.current;
+  };
+  $.MultiSelect.AutoComplete.prototype.navigate_down = function navigate_down() {
+    var next;
+    next = this.current + 1;
+    if (next >= this.matches.length) {
+      next = 0;
+    }
+    return this.select_index(next);
+  };
+  $.MultiSelect.AutoComplete.prototype.navigate_up = function navigate_up() {
+    var next;
+    next = this.current - 1;
+    if (next < 0) {
+      next = this.matches.length - 1;
+    }
+    return this.select_index(next);
+  };
+  $.MultiSelect.AutoComplete.prototype.create_item = function create_item(text, highlight) {
+    var item;
+    item = $(document.createElement("li"));
+    item.click((function(__this) {
+      var __func = function() {
+        this.multiselect.add_and_reset();
+        this.search();
+        return this.input.focus();
+      };
+      return (function() {
+        return __func.apply(__this, arguments);
+      });
+    })(this));
+    item.html(text);
+    this.list.append(item);
+    return item;
+  };
+  $.MultiSelect.AutoComplete.prototype.value = function value() {
+    return this.matches[this.current];
+  };
+  $.MultiSelect.AutoComplete.prototype.highlight = function highlight(text, highlight) {
+    var reg;
+    reg = "(" + (RegExp.escape(highlight)) + ")";
+    return text.replace(new RegExp(reg, "gi"), '<em>$1</em>');
+  };
+  $.MultiSelect.AutoComplete.prototype.matching_completions = function matching_completions(text) {
+    var count, reg;
+    reg = new RegExp(RegExp.escape(text), "i");
+    count = 0;
+    return $.grep(this.completions, (function(__this) {
+      var __func = function(c) {
+        if (count >= this.multiselect.options.max_complete_results) {
+          return false;
+        }
+        if ($.inArray(c, this.multiselect.values) > -1) {
+          return false;
+        }
+        if (c.match(reg)) {
+          count++;
+          return true;
+        } else {
+          return false;
+        }
+      };
+      return (function() {
+        return __func.apply(__this, arguments);
+      });
+    })(this));
+  };
+  // Hook jQuery extension
   $.fn.multiselect = function multiselect(options) {
     options = (typeof options !== "undefined" && options !== null) ? options : {};
     return $(this).each(function() {
@@ -261,5 +432,14 @@ $.extend(String.prototype, {
   },
   unentitizeHTML: function unentitizeHTML() {
     return this.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  },
+  blank: function blank() {
+    return this.trim().length === 0;
+  },
+  present: function present() {
+    return !this.blank();
   }
 });
+RegExp.escape = function escape(str) {
+  return String(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
+};

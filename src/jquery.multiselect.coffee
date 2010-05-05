@@ -30,6 +30,8 @@
     constructor: (element, options) ->
       @options: {
         separator: ","
+        completions: [],
+        max_complete_results: 5
       }
       $.extend(@options, options || {})
       @values: []
@@ -57,9 +59,10 @@
     
     initialize_events: ->
       # create helpers
-      @selection = new $.MultiSelect.Selection(@input)
-      @resizable = new $.MultiSelect.ResizableInput(@input)
-      @observer = new $.MultiSelect.InputObserver(@input)
+      @selection: new $.MultiSelect.Selection(@input)
+      @resizable: new $.MultiSelect.ResizableInput(@input)
+      @observer: new $.MultiSelect.InputObserver(@input)
+      @autocomplete: new $.MultiSelect.AutoComplete(this, @options.completions)
       
       # prevent container click to put carret at end
       @input.click (e) =>
@@ -67,7 +70,7 @@
       
       # create element when place separator or paste
       @input.keyup =>
-        values = @input.val().split(@options.separator)
+        values: @input.val().split(@options.separator)
         
         if values.length > 1
           for value in values
@@ -83,12 +86,17 @@
       # add element on press TAB or RETURN
       @observer.bind [KEY.TAB, KEY.RETURN], (e) =>
         e.preventDefault()
-        @add(@input.val())
+        @add_and_reset()
+    
+    add_and_reset: ->    
+      if @autocomplete.value()
+        @add(@autocomplete.value())
         @input.val("")
     
     # add new element
     add: (value) ->
       return if $.inArray(value, @values) > -1
+      return if value.blank()
       
       @values.push(value)
       
@@ -110,9 +118,7 @@
       @refresh_hidden()
     
     remove: (value) ->
-      console.log(value)
-      @values = $.grep @values, (v) -> v != value
-      console.log(@values)
+      @values: $.grep @values, (v) -> v != value
       @refresh_hidden()
     
     refresh_hidden: ->
@@ -145,8 +151,8 @@
     
     set_caret: (begin, end) ->
       end ?= begin
-      @input.selectionStart = begin
-      @input.selectionEnd = end
+      @input.selectionStart: begin
+      @input.selectionEnd: end
     
     set_caret_at_end: ->
       @set_caret(@input.value.length)
@@ -185,7 +191,107 @@
     set_width: ->
       @input.css("width", @calculate_width() + "px")
   
-  $.fn.multiselect = (options) ->
+  # AutoComplete Helper
+  class $.MultiSelect.AutoComplete
+    constructor: (multiselect, completions) ->
+      @multiselect: multiselect
+      @input: @multiselect.input
+      @completions: completions
+      @matches: []
+      @create_elements()
+      @bind_events()
+    
+    create_elements: ->
+      @container: $(document.createElement("div"))
+      @container.addClass("jquery-multiselect-autocomplete")
+      @container.css("width", @multiselect.container.outerWidth())
+      
+      @container.append(@def)
+      
+      @list: $(document.createElement("ul"))
+      @list.addClass("feed")
+      
+      @container.append(@list)
+      @multiselect.container.after(@container)
+    
+    bind_events: ->
+      @input.keypress(@search <- this)
+      @input.keyup(@search <- this)
+      @input.change(@search <- this)
+      @multiselect.observer.bind KEY.UP, => @navigate_up()
+      @multiselect.observer.bind KEY.DOWN, => @navigate_down()
+    
+    search: ->
+      return if @input.val().trim() == @query # dont do operation if query is same
+      
+      @query: @input.val().trim()
+      @list.html("") # clear list
+      @current: 0
+      
+      if @query.present()
+        @matches: @matching_completions(@query)
+        
+        def: @create_item("Add <em>" + @query + "</em>")
+        def.mouseover(@select_index <- this, 0)
+        
+        for option, i in @matches
+          item: @create_item(@highlight(option, @query))
+          item.mouseover(@select_index <- this, i + 1)
+        
+        @matches.unshift(@query)
+        @select_index(0)
+      else
+        @query: null
+    
+    select_index: (index) ->
+      items: @list.find("li")
+      items.removeClass("auto-focus")
+      items.filter(":eq(${index})").addClass("auto-focus")
+      
+      @current: index
+    
+    navigate_down: ->
+      next: @current + 1
+      next: 0 if next >= @matches.length
+      @select_index(next)
+    
+    navigate_up: ->
+      next: @current - 1
+      next: @matches.length - 1 if next < 0
+      @select_index(next)
+    
+    create_item: (text, highlight) ->
+      item: $(document.createElement("li"))
+      item.click =>
+        @multiselect.add_and_reset()
+        @search()
+        @input.focus()
+      item.html(text)
+      @list.append(item)
+      item
+    
+    value: ->
+      @matches[@current]
+    
+    highlight: (text, highlight) ->
+      reg: "(${RegExp.escape(highlight)})"
+      text.replace(new RegExp(reg, "gi"), '<em>$1</em>')
+    
+    matching_completions: (text) ->
+      reg: new RegExp(RegExp.escape(text), "i")
+      count: 0
+      $.grep @completions, (c) =>
+        return false if count >= @multiselect.options.max_complete_results
+        return false if $.inArray(c, @multiselect.values) > -1
+        
+        if c.match(reg)
+          count++
+          true
+        else
+          false
+  
+  # Hook jQuery extension
+  $.fn.multiselect: (options) ->
     options ?= {}
     
     $(this).each ->
@@ -195,4 +301,9 @@
 $.extend String.prototype, {
   entitizeHTML: -> return this.replace(/</g,'&lt;').replace(/>/g,'&gt;')
   unentitizeHTML: -> return this.replace(/&lt;/g,'<').replace(/&gt;/g,'>')
+  blank: -> return this.trim().length == 0
+  present: -> return not @blank()
 };
+
+RegExp.escape: (str) ->
+  String(str).replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
