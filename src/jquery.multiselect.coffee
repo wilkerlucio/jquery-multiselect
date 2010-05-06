@@ -282,8 +282,9 @@
           def.mouseover(@select_index <- this, 0)
         
         for option, i in @matches
+          x: if @multiselect.options.enable_new_options then i + 1 else i
           item: @create_item(@highlight(option[0], @query))
-          item.mouseover(@select_index <- this, i + 1)
+          item.mouseover(@select_index <- this, x)
         
         @matches.unshift([@query, @query]) if @multiselect.options.enable_new_options
         

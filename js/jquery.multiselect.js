@@ -375,7 +375,7 @@
     })(this));
   };
   $.MultiSelect.AutoComplete.prototype.search = function search() {
-    var _a, _b, def, i, item, option;
+    var _a, _b, def, i, item, option, x;
     if (this.input.val().trim() === this.query) {
       return null;
     }
@@ -398,12 +398,13 @@
       _a = this.matches;
       for (i = 0, _b = _a.length; i < _b; i++) {
         option = _a[i];
+        x = this.multiselect.options.enable_new_options ? i + 1 : i;
         item = this.create_item(this.highlight(option[0], this.query));
         item.mouseover((function(func, obj, args) {
           return function() {
             return func.apply(obj, args.concat(Array.prototype.slice.call(arguments, 0)));
           };
-        }(this.select_index, this, [i + 1])));
+        }(this.select_index, this, [x])));
       }
       if (this.multiselect.options.enable_new_options) {
         this.matches.unshift([this.query, this.query]);
