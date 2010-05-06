@@ -93,13 +93,16 @@
           e.preventDefault()
           @remove(@values[@values.length - 1])
     
+    values_real: ->
+      $.map @values, (v) -> v[1]
+    
     parse_value: (min) ->
       min ?= 0
       values: @input.val().split(@options.separator)
 
       if values.length > min
         for value in values
-          @add value if value.present()
+          @add [value, value] if value.present()
 
         @input.val("")
         @autocomplete.search()
@@ -112,10 +115,10 @@
     
     # add new element
     add: (value) ->
-      return if $.inArray(value, @values) > -1
-      return if value.blank()
+      return if $.inArray(value[1], @values_real()) > -1
+      return if value[0].blank()
       
-      value = value.trim()
+      value[1] = value[1].trim()
       @values.push(value)
       
       a: $(document.createElement("a"))
@@ -123,7 +126,7 @@
       a.mouseover -> $(this).addClass("bit-hover")
       a.mouseout -> $(this).removeClass("bit-hover")
       a.data("value", value)
-      a.html(value.entitizeHTML())
+      a.html(value[0].entitizeHTML())
       
       close: $(document.createElement("a"))
       close.addClass("closebutton")
@@ -135,13 +138,14 @@
       @refresh_hidden()
     
     remove: (value) ->
-      @values: $.grep @values, (v) -> v != value
+      console.log @values
+      @values: $.grep @values, (v) -> v[1] != value[1]
       @container.find("a.bit-box").each ->
-        $(this).remove() if $(this).data("value") == value
+        $(this).remove() if $(this).data("value")[1] == value[1]
       @refresh_hidden()
     
     refresh_hidden: ->
-      @hidden.val(@values.join(@options.separator))
+      @hidden.val(@values_real().join(@options.separator))
   
   # Input Observer Helper
   class $.MultiSelect.InputObserver
@@ -225,10 +229,21 @@
     constructor: (multiselect, completions) ->
       @multiselect: multiselect
       @input: @multiselect.input
-      @completions: completions
+      @completions: @parse_completions(completions)
       @matches: []
       @create_elements()
       @bind_events()
+    
+    parse_completions: (completions) ->
+      $.map completions, (value) ->
+        if typeof value == "string"
+          [[value, value]]
+        else if value instanceof Array and value.length == 2
+          [value]
+        else if value.value and value.caption
+          [[value.caption, value.value]]
+        else
+          console.error "Invalid option ${value}" if console
     
     create_elements: ->
       @container: $(document.createElement("div"))
@@ -266,10 +281,10 @@
         def.mouseover(@select_index <- this, 0)
         
         for option, i in @matches
-          item: @create_item(@highlight(option, @query))
+          item: @create_item(@highlight(option[0], @query))
           item.mouseover(@select_index <- this, i + 1)
         
-        @matches.unshift(@query)
+        @matches.unshift([@query, @query])
         @select_index(0)
       else
         @matches: []
@@ -315,9 +330,9 @@
       count: 0
       $.grep @completions, (c) =>
         return false if count >= @multiselect.options.max_complete_results
-        return false if $.inArray(c, @multiselect.values) > -1
+        return false if $.inArray(c[1], @multiselect.values_real()) > -1
         
-        if c.match(reg)
+        if c[0].match(reg)
           count++
           true
         else

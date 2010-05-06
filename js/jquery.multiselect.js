@@ -118,6 +118,11 @@
       });
     })(this));
   };
+  $.MultiSelect.prototype.values_real = function values_real() {
+    return $.map(this.values, function(v) {
+      return v[1];
+    });
+  };
   $.MultiSelect.prototype.parse_value = function parse_value(min) {
     var _a, _b, _c, value, values;
     min = (typeof min !== "undefined" && min !== null) ? min : 0;
@@ -127,7 +132,7 @@
       for (_a = 0, _c = _b.length; _a < _c; _a++) {
         value = _b[_a];
         if (value.present()) {
-          this.add(value);
+          this.add([value, value]);
         }
       }
       this.input.val("");
@@ -144,13 +149,13 @@
   // add new element
   $.MultiSelect.prototype.add = function add(value) {
     var a, close;
-    if ($.inArray(value, this.values) > -1) {
+    if ($.inArray(value[1], this.values_real()) > -1) {
       return null;
     }
-    if (value.blank()) {
+    if (value[0].blank()) {
       return null;
     }
-    value = value.trim();
+    value[1] = value[1].trim();
     this.values.push(value);
     a = $(document.createElement("a"));
     a.addClass("bit bit-box");
@@ -161,7 +166,7 @@
       return $(this).removeClass("bit-hover");
     });
     a.data("value", value);
-    a.html(value.entitizeHTML());
+    a.html(value[0].entitizeHTML());
     close = $(document.createElement("a"));
     close.addClass("closebutton");
     close.click((function(__this) {
@@ -177,18 +182,19 @@
     return this.refresh_hidden();
   };
   $.MultiSelect.prototype.remove = function remove(value) {
+    console.log(this.values);
     this.values = $.grep(this.values, function(v) {
-      return v !== value;
+      return v[1] !== value[1];
     });
     this.container.find("a.bit-box").each(function() {
-      if ($(this).data("value") === value) {
+      if ($(this).data("value")[1] === value[1]) {
         return $(this).remove();
       }
     });
     return this.refresh_hidden();
   };
   $.MultiSelect.prototype.refresh_hidden = function refresh_hidden() {
-    return this.hidden.val(this.values.join(this.options.separator));
+    return this.hidden.val(this.values_real().join(this.options.separator));
   };
   // Input Observer Helper
   $.MultiSelect.InputObserver = function InputObserver(element) {
@@ -303,11 +309,24 @@
   $.MultiSelect.AutoComplete = function AutoComplete(multiselect, completions) {
     this.multiselect = multiselect;
     this.input = this.multiselect.input;
-    this.completions = completions;
+    this.completions = this.parse_completions(completions);
     this.matches = [];
     this.create_elements();
     this.bind_events();
     return this;
+  };
+  $.MultiSelect.AutoComplete.prototype.parse_completions = function parse_completions(completions) {
+    return $.map(completions, function(value) {
+      if (typeof value === "string") {
+        return [[value, value]];
+      } else if (value instanceof Array && value.length === 2) {
+        return [value];
+      } else if (value.value && value.caption) {
+        return [[value.caption, value.value]];
+      } else if (console) {
+        return console.error("Invalid option " + (value));
+      }
+    });
   };
   $.MultiSelect.AutoComplete.prototype.create_elements = function create_elements() {
     this.container = $(document.createElement("div"));
@@ -377,14 +396,14 @@
       _a = this.matches;
       for (i = 0, _b = _a.length; i < _b; i++) {
         option = _a[i];
-        item = this.create_item(this.highlight(option, this.query));
+        item = this.create_item(this.highlight(option[0], this.query));
         item.mouseover((function(func, obj, args) {
           return function() {
             return func.apply(obj, args.concat(Array.prototype.slice.call(arguments, 0)));
           };
         }(this.select_index, this, [i + 1])));
       }
-      this.matches.unshift(this.query);
+      this.matches.unshift([this.query, this.query]);
       return this.select_index(0);
     } else {
       this.matches = [];
@@ -451,10 +470,10 @@
         if (count >= this.multiselect.options.max_complete_results) {
           return false;
         }
-        if ($.inArray(c, this.multiselect.values) > -1) {
+        if ($.inArray(c[1], this.multiselect.values_real()) > -1) {
           return false;
         }
-        if (c.match(reg)) {
+        if (c[0].match(reg)) {
           count++;
           return true;
         } else {
