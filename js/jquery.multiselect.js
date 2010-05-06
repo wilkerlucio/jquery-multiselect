@@ -494,7 +494,28 @@
   $.fn.multiselect = function multiselect(options) {
     options = (typeof options !== "undefined" && options !== null) ? options : {};
     return $(this).each(function() {
-      return new $.MultiSelect(this, options);
+      var _a, _b, _c, completions, input, option, select_options;
+      if (this.tagName.toLowerCase() === "select") {
+        input = $(document.createElement("input"));
+        input.attr("type", "text");
+        input.attr("name", this.name);
+        input.attr("id", this.id);
+        completions = [];
+        _b = this.options;
+        for (_a = 0, _c = _b.length; _a < _c; _a++) {
+          option = _b[_a];
+          completions.push([option.innerHTML, option.value]);
+        }
+        select_options = {
+          completions: completions,
+          enable_new_options: false
+        };
+        $.extend(select_options, options);
+        $(this).replaceWith(input);
+        return new $.MultiSelect(input, select_options);
+      } else if (this.tagName.toLowerCase() === "input" && this.type === "text") {
+        return new $.MultiSelect(this, options);
+      }
     });
   };
   return $.fn.multiselect;

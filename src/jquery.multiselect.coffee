@@ -346,7 +346,28 @@
     options ?= {}
     
     $(this).each ->
-      new $.MultiSelect(this, options)
+      if this.tagName.toLowerCase() == "select"
+        input: $(document.createElement("input"))
+        input.attr("type", "text")
+        input.attr("name", this.name)
+        input.attr("id", this.id)
+        
+        completions: []
+        for option in this.options
+          completions.push([option.innerHTML, option.value])
+        
+        select_options: {
+          completions: completions
+          enable_new_options: false
+        }
+        
+        $.extend(select_options, options)
+        
+        $(this).replaceWith(input)
+        
+        new $.MultiSelect(input, select_options)
+      else if this.tagName.toLowerCase() == "input" and this.type == "text"
+        new $.MultiSelect(this, options)
 )(jQuery)
 
 $.extend String.prototype, {
