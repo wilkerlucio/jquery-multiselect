@@ -31,8 +31,9 @@
     constructor: (element, options) ->
       @options: {
         separator: ","
-        completions: [],
+        completions: []
         max_complete_results: 5
+        enable_new_options: true
       }
       $.extend(@options, options || {})
       @values: []
@@ -277,14 +278,16 @@
         @container.css("display", "block")
         @matches: @matching_completions(@query)
         
-        def: @create_item("Add <em>" + @query + "</em>")
-        def.mouseover(@select_index <- this, 0)
+        if @multiselect.options.enable_new_options
+          def: @create_item("Add <em>" + @query + "</em>")
+          def.mouseover(@select_index <- this, 0)
         
         for option, i in @matches
           item: @create_item(@highlight(option[0], @query))
           item.mouseover(@select_index <- this, i + 1)
         
-        @matches.unshift([@query, @query])
+        @matches.unshift([@query, @query]) if @multiselect.options.enable_new_options
+        
         @select_index(0)
       else
         @matches: []

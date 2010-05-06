@@ -30,7 +30,8 @@
     this.options = {
       separator: ",",
       completions: [],
-      max_complete_results: 5
+      max_complete_results: 5,
+      enable_new_options: true
     };
     $.extend(this.options, options || {});
     this.values = [];
@@ -387,12 +388,14 @@
     if (this.query.present()) {
       this.container.css("display", "block");
       this.matches = this.matching_completions(this.query);
-      def = this.create_item("Add <em>" + this.query + "</em>");
-      def.mouseover((function(func, obj, args) {
-        return function() {
-          return func.apply(obj, args.concat(Array.prototype.slice.call(arguments, 0)));
-        };
-      }(this.select_index, this, [0])));
+      if (this.multiselect.options.enable_new_options) {
+        def = this.create_item("Add <em>" + this.query + "</em>");
+        def.mouseover((function(func, obj, args) {
+          return function() {
+            return func.apply(obj, args.concat(Array.prototype.slice.call(arguments, 0)));
+          };
+        }(this.select_index, this, [0])));
+      }
       _a = this.matches;
       for (i = 0, _b = _a.length; i < _b; i++) {
         option = _a[i];
@@ -403,7 +406,9 @@
           };
         }(this.select_index, this, [i + 1])));
       }
-      this.matches.unshift([this.query, this.query]);
+      if (this.multiselect.options.enable_new_options) {
+        this.matches.unshift([this.query, this.query]);
+      }
       return this.select_index(0);
     } else {
       this.matches = [];
