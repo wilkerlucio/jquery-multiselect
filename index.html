@@ -6,7 +6,7 @@
 		<link rel="stylesheet" type="text/css" href="stylesheets/main.css" media="all" />
 		<link rel="stylesheet" type="text/css" href="http://github.com/wilkerlucio/jquery-multiselect/raw/master/css/jquery.multiselect.css" media="all">
 		<script type="text/javascript" src="http://github.com/wilkerlucio/jquery-multiselect/raw/master/vendor/jquery-1.4.2.min.js"></script>
-		<script type="text/javascript" src="http://github.com/wilkerlucio/jquery-multiselect/raw/master/dist/jquery.multiselect.0.1.2.min.js"></script>
+		<script type="text/javascript" src="http://github.com/wilkerlucio/jquery-multiselect/raw/master/dist/jquery.multiselect.0.1.6.min.js"></script>
 		<script type="text/javascript">
 			var names = [
 				"Alejandra Pizarnik",
@@ -33,9 +33,11 @@
 			]
 
 			$(function() {
-				$("#sample-tags").multiselect();
+				$("#tags-sample").multiselect();
 				$("#tags-complete").multiselect({completions: names});
 				$("#tags-complete-more").multiselect({completions: names, max_complete_results: 10});
+				$("#tags-disable-new").multiselect({completions: names, enable_new_options: false});
+				$("#tags-select").multiselect();
 			});
 		</script>
 	</head>
@@ -50,18 +52,209 @@
 			
 			<h1>jQuery MultiSelect Plugin</h1>
 			
-			<h2>About</h2>
-			
 			<h2>Requirements</h2>
 			<p>jQuery MultiSelect requires jQuery 1.4.2+</p>
 			
 			<h2>Usage</h2>
+			<code>$("selector").multiselect([options:Hash])</code>
+			<p>Options available:</p>
+			<ul>
+				<li><strong>separator:</strong> Separator to use in hidden field containing field value. <em>default: ","</em></li>
+				<li><strong>completions:</strong> Options to do auto-complete. <em>default: []</em></li>
+				<li><strong>max_complete_results:</strong> Max results at auto-complete box. <em>default: 5</em></li>
+				<li><strong>enable_new_options:</strong> If false, user can't use options that aren't in completions. <em>default: true</em></li>
+				<li><strong>complex_search:</strong> By default multiselect will do a complex search to match results easier, disable if you have a lot of records and want a faster search. <em>default: true</em></li>
+			</ul>
+			<p>The completions should be and array with all available completions that you want, each completion should be defined in one of following ways:</p>
+			<ol>
+				<li><strong>String:</strong> using as string, the caption and value will be the same. <em>example: "Hi"</em></li>
+				<li><strong>Array:</strong> you can use as Array with 2 elements, where first element will be the caption, and the second the value. <em>example: ["Hey Dude", "dude"]</em></li>
+				<li><strong>Hash:</strong> you can send a hash with keys <em>caption</em> and <em>value</em>. <em>example: {caption: "Hey Dude", value: "dude"}</em></li>
+			</ol>
+			<p>If you want to multiselect as a replacement for a select tag, just select this using jQuery selector and apply multiselect, it will work like magic!</p>
+			
+			<h2>Examples</h2>
 			<h3>Simple usage</h3>
-			<input type="text" id="sample-tags" name="tags" />
+			<code>$("#tags-sample").multiselect();</code>
+			<input type="text" id="tags-sample" name="tags_sample" />
 			<h3>With Autocomplete</h3>
+			<code>$("#tags-complete").multiselect({completions: names});</code>
 			<input type="text" id="tags-complete" name="tags_complete" />
 			<h3>More results on Autocomplete</h3>
+			<code>$("#tags-complete-more").multiselect({completions: names, max_complete_results: 10});</code>
 			<input type="text" id="tags-complete-more" name="tags_complete_more" />
+			<h3>Disable new options</h3>
+			<code>$("#tags-disable-new").multiselect({completions: names, enable_new_options: false});</code>
+			<input type="text" id="tags-disable-new" name="tags_disable_new" />
+			<h3>Creating from a select</h3>
+			<code>$("#tags-select").multiselect();</code>
+			<select id="tags-select" name="tags-select">
+				<option value="1">Aardvark</option>
+				<option value="2">African</option>
+				<option value="3">Alligator</option>
+				<option value="4">American</option>
+				<option value="5">Ant</option>
+				<option value="6">Anteater</option>
+				<option value="7">Antelope</option>
+				<option value="8">Ape</option>
+				<option value="9">Armadillo</option>
+				<option value="10">Ass/Donkey</option>
+				<option value="11">Baboon</option>
+				<option value="12">Badger</option>
+				<option value="13">Bat</option>
+				<option value="14">Bear</option>
+				<option value="15">Beaver</option>
+				<option value="16">Bee</option>
+				<option value="17">Bison</option>
+				<option value="18">Boar</option>
+				<option value="19">Bush baby</option>
+				<option value="20">Butterfly</option>
+				<option value="21">Camel</option>
+				<option value="22">Cat</option>
+				<option value="23">Cattle</option>
+				<option value="24">Chamois  </option>
+				<option value="25">Cheetah  </option>
+				<option value="26">Chicken  </option>
+				<option value="27">Chimpanzee</option>
+				<option value="28">Cobra</option>
+				<option value="29">Cockroach</option>
+				<option value="30">Cormorant</option>
+				<option value="31">Coyote</option>
+				<option value="32">Crab</option>
+				<option value="33">Crane</option>
+				<option value="34">Crocodile</option>
+				<option value="35">Crow</option>
+				<option value="36">Deer</option>
+				<option value="37">Dog</option>
+				<option value="38">Dogfish</option>
+				<option value="39">Dolphin</option>
+				<option value="40">Donkey/Ass</option>
+				<option value="41">Dove</option>
+				<option value="42">Dragonfly</option>
+				<option value="43">Duck</option>
+				<option value="44">Dugong</option>
+				<option value="45">Eagle</option>
+				<option value="46">Echidna</option>
+				<option value="47">Eel</option>
+				<option value="48">Eland</option>
+				<option value="49">Elephant</option>
+				<option value="50">Elephant seal</option>
+				<option value="51">Elk (wapiti)</option>
+				<option value="52">Falcon</option>
+				<option value="53">Ferret</option>
+				<option value="54">Finch</option>
+				<option value="55">Fly</option>
+				<option value="56">Fox</option>
+				<option value="57">Frog</option>
+				<option value="58">Gaur</option>
+				<option value="59">Gazelle</option>
+				<option value="60">Gerbil</option>
+				<option value="61">Giant Panda</option>
+				<option value="62">Giraffe</option>
+				<option value="63">Gnu</option>
+				<option value="64">Goat</option>
+				<option value="65">Goose</option>
+				<option value="66">Gorilla</option>
+				<option value="67">silverback</option>
+				<option value="68">Guanaco</option>
+				<option value="69">Guinea fowl</option>
+				<option value="70">Guinea pig</option>
+				<option value="71">Gull</option>
+				<option value="72">Hamster</option>
+				<option value="73">Hare</option>
+				<option value="74">Hawk</option>
+				<option value="75">Hedgehog</option>
+				<option value="76">Heron</option>
+				<option value="77">Hippopotamus</option>
+				<option value="78">Hornet</option>
+				<option value="79">Horse</option>
+				<option value="80">Human</option>
+				<option value="81">Hyena</option>
+				<option value="82">Jackal</option>
+				<option value="83">Jaguar</option>
+				<option value="84">Jellyfish</option>
+				<option value="85">Kangaroo</option>
+				<option value="86">Komodo dragon</option>
+				<option value="87">Kouprey</option>
+				<option value="88">Kudu</option>
+				<option value="89">Lark</option>
+				<option value="90">Lemur</option>
+				<option value="91">Leopard</option>
+				<option value="92">Lion</option>
+				<option value="93">Llama</option>
+				<option value="94">Loris</option>
+				<option value="95">Louse</option>
+				<option value="96">Lobster</option>
+				<option value="97">Lyrebird</option>
+				<option value="98">Magpie</option>
+				<option value="99">Mallard</option>
+				<option value="100">Manatee</option>
+				<option value="101">Meerkat</option>
+				<option value="102">Mink</option>
+				<option value="103">Mole</option>
+				<option value="104">Monkey</option>
+				<option value="105">Moose</option>
+				<option value="106">Mouse</option>
+				<option value="107">Mosquito</option>
+				<option value="108">Mule</option>
+				<option value="109">Nightingale</option>
+				<option value="110">Okapi</option>
+				<option value="111">Oryx</option>
+				<option value="112">Ostrich</option>
+				<option value="113">Otter</option>
+				<option value="114">Owl</option>
+				<option value="115">Ox</option>
+				<option value="116">Oyster</option>
+				<option value="117">Panther</option>
+				<option value="118">Partridge</option>
+				<option value="119">Peafowl</option>
+				<option value="120">Pelican</option>
+				<option value="121">Pig</option>
+				<option value="122">Pigeon</option>
+				<option value="123">Pony</option>
+				<option value="124">Porcupine</option>
+				<option value="125">Quelea</option>
+				<option value="126">Rabbit</option>
+				<option value="127">Raccoon</option>
+				<option value="128">Rail</option>
+				<option value="129">Ram</option>
+				<option value="130">Rat</option>
+				<option value="131">Raven</option>
+				<option value="132">Red deer</option>
+				<option value="133">Red panda</option>
+				<option value="134">Reindeer (caribou)</option>
+				<option value="135">Rhinoceros</option>
+				<option value="136">Salamander</option>
+				<option value="137">Sea lion</option>
+				<option value="138">Seal</option>
+				<option value="139">Seastar</option>
+				<option value="140">Shark</option>
+				<option value="141">Sheep</option>
+				<option value="142">Shrew</option>
+				<option value="143">Skunk</option>
+				<option value="144">Snail</option>
+				<option value="145">Snake</option>
+				<option value="146">Spider</option>
+				<option value="147">Squid</option>
+				<option value="148">Squirrel</option>
+				<option value="149">Swan</option>
+				<option value="150">Tapir</option>
+				<option value="151">Tarsier</option>
+				<option value="152">Tiger</option>
+				<option value="153">Toad</option>
+				<option value="154">Turkey</option>
+				<option value="155">Turtle</option>
+				<option value="156">Vicuña</option>
+				<option value="157">Walrus</option>
+				<option value="158">Wasp</option>
+				<option value="159">Water buffalo</option>
+				<option value="160">Weasel</option>
+				<option value="161">Whale</option>
+				<option value="162">Wolf</option>
+				<option value="163">Worm</option>
+				<option value="164">Yak</option>
+				<option value="165">Zebra</option>
+			</select>
 		</div>
 	</body>
 </html>
