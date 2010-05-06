@@ -19,7 +19,7 @@ div.jquery-multiselect a.bit-input input { width: 150px; margin: 0; border: none
 div.jquery-multiselect a.bit-box-focus a.closebutton, div.jquery-multiselect a.bit-box-focus a.closebutton:hover { background-position: bottom; }
 
 /* Autocompleter CSS */
-div.jquery-multiselect-autocomplete { position: absolute; width: 512px; background: #eee; }
+div.jquery-multiselect-autocomplete { position: absolute; width: 512px; background: #eee; z-index: 999999; }
 div.jquery-multiselect-autocomplete .default { padding: 5px 7px; border: 1px solid #ccc; border-width: 0 1px 1px; }
 div.jquery-multiselect-autocomplete ul { margin: 0; padding: 0; overflow: auto; }
 div.jquery-multiselect-autocomplete ul li { padding: 5px 12px; z-index: 1000; cursor: pointer; margin: 0; list-style-type: none; border: 1px solid #ccc; border-width: 0 1px 1px; }
