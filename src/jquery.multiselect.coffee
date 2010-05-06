@@ -343,8 +343,9 @@
         highlighted: ""
         current: 0
         
-        for char in text
-          if current < highlight.length and char.toLowerCase() == highlight[current].toLowerCase()
+        for char, i in text
+          char: text.charAt(i)
+          if current < highlight.length and char.toLowerCase() == highlight.charAt(current).toLowerCase()
             highlighted += "<em>${char}</em>"
             current++
           else
@@ -358,7 +359,8 @@
     matching_completions: (text) ->
       if @multiselect.options.complex_search
         reg: ""
-        for char in text
+        for char, i in text
+          char: text.charAt(i)
           reg += RegExp.escape(char) + ".*"
         
         reg: new RegExp(reg, "i")

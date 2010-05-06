@@ -491,14 +491,15 @@
     return this.matches[this.current];
   };
   $.MultiSelect.AutoComplete.prototype.highlight = function highlight(text, highlight) {
-    var _a, _b, _c, char, current, highlighted, reg;
+    var _a, _b, char, current, highlighted, i, reg;
     if (this.multiselect.options.complex_search) {
       highlighted = "";
       current = 0;
-      _b = text;
-      for (_a = 0, _c = _b.length; _a < _c; _a++) {
-        char = _b[_a];
-        if (current < highlight.length && char.toLowerCase() === highlight[current].toLowerCase()) {
+      _a = text;
+      for (i = 0, _b = _a.length; i < _b; i++) {
+        char = _a[i];
+        char = text.charAt(i);
+        if (current < highlight.length && char.toLowerCase() === highlight.charAt(current).toLowerCase()) {
           highlighted += "<em>" + (char) + "</em>";
           current++;
         } else {
@@ -512,12 +513,13 @@
     }
   };
   $.MultiSelect.AutoComplete.prototype.matching_completions = function matching_completions(text) {
-    var _a, _b, _c, char, count, reg;
+    var _a, _b, char, count, i, reg;
     if (this.multiselect.options.complex_search) {
       reg = "";
-      _b = text;
-      for (_a = 0, _c = _b.length; _a < _c; _a++) {
-        char = _b[_a];
+      _a = text;
+      for (i = 0, _b = _a.length; i < _b; i++) {
+        char = _a[i];
+        char = text.charAt(i);
         reg += RegExp.escape(char) + ".*";
       }
       reg = new RegExp(reg, "i");
