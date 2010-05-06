@@ -102,7 +102,8 @@
         return __func.apply(__this, arguments);
       });
     })(this));
-    return this.observer.bind([KEY.BACKSPACE], (function(__this) {
+    // remove last item
+    this.observer.bind([KEY.BACKSPACE], (function(__this) {
       var __func = function(e) {
         var caret;
         if (this.values.length <= 0) {
@@ -113,6 +114,30 @@
           e.preventDefault();
           return this.remove(this.values[this.values.length - 1]);
         }
+      };
+      return (function() {
+        return __func.apply(__this, arguments);
+      });
+    })(this));
+    // hide complete box
+    this.input.blur((function(__this) {
+      var __func = function() {
+        return setTimeout((function(__this) {
+          var __func = function() {
+            return this.autocomplete.hide_complete_box();
+          };
+          return (function() {
+            return __func.apply(__this, arguments);
+          });
+        })(this), 200);
+      };
+      return (function() {
+        return __func.apply(__this, arguments);
+      });
+    })(this));
+    return this.observer.bind([KEY.ESCAPE], (function(__this) {
+      var __func = function(e) {
+        return this.autocomplete.hide_complete_box();
       };
       return (function() {
         return __func.apply(__this, arguments);
@@ -385,7 +410,7 @@
     // clear list
     this.current = 0;
     if (this.query.present()) {
-      this.container.css("display", "block");
+      this.container.fadeIn("fast");
       this.matches = this.matching_completions(this.query);
       if (this.multiselect.options.enable_new_options) {
         def = this.create_item("Add <em>" + this.query + "</em>");
@@ -412,10 +437,13 @@
       return this.select_index(0);
     } else {
       this.matches = [];
-      this.container.css("display", "none");
+      this.hide_complete_box();
       this.query = null;
       return this.query;
     }
+  };
+  $.MultiSelect.AutoComplete.prototype.hide_complete_box = function hide_complete_box() {
+    return this.container.fadeOut("fast");
   };
   $.MultiSelect.AutoComplete.prototype.select_index = function select_index(index) {
     var items;

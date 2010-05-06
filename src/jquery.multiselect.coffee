@@ -86,6 +86,7 @@
           e.preventDefault()
           @add_and_reset()
       
+      # remove last item
       @observer.bind [KEY.BACKSPACE], (e) =>
         return if @values.length <= 0
         caret = @selection.get_caret()
@@ -93,6 +94,15 @@
         if caret[0] == 0 and caret[1] == 0
           e.preventDefault()
           @remove(@values[@values.length - 1])
+      
+      # hide complete box
+      @input.blur =>
+        setTimeout(=>
+          @autocomplete.hide_complete_box()
+        200)
+      
+      @observer.bind [KEY.ESCAPE], (e) =>
+        @autocomplete.hide_complete_box()
     
     values_real: ->
       $.map @values, (v) -> v[1]
@@ -274,7 +284,7 @@
       @current: 0
       
       if @query.present()
-        @container.css("display", "block")
+        @container.fadeIn("fast")
         @matches: @matching_completions(@query)
         
         if @multiselect.options.enable_new_options
@@ -291,8 +301,11 @@
         @select_index(0)
       else
         @matches: []
-        @container.css("display", "none")
+        @hide_complete_box()
         @query: null
+    
+    hide_complete_box: ->
+      @container.fadeOut("fast")
     
     select_index: (index) ->
       items: @list.find("li")
