@@ -183,7 +183,6 @@
     return this.refresh_hidden();
   };
   $.MultiSelect.prototype.remove = function remove(value) {
-    console.log(this.values);
     this.values = $.grep(this.values, function(v) {
       return v[1] !== value[1];
     });

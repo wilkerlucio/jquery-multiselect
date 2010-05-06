@@ -139,7 +139,6 @@
       @refresh_hidden()
     
     remove: (value) ->
-      console.log @values
       @values: $.grep @values, (v) -> v[1] != value[1]
       @container.find("a.bit-box").each ->
         $(this).remove() if $(this).data("value")[1] == value[1]
