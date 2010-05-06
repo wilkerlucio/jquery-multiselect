@@ -34,6 +34,7 @@
         completions: []
         max_complete_results: 5
         enable_new_options: true
+        complex_search: true
       }
       $.extend(@options, options || {})
       @values: []
@@ -338,11 +339,31 @@
       @matches[@current]
     
     highlight: (text, highlight) ->
-      reg: "(${RegExp.escape(highlight)})"
-      text.replace(new RegExp(reg, "gi"), '<em>$1</em>')
+      if @multiselect.options.complex_search
+        highlighted: ""
+        current: 0
+        
+        for char in text
+          if current < highlight.length and char.toLowerCase() == highlight[current].toLowerCase()
+            highlighted += "<em>${char}</em>"
+            current++
+          else
+            highlighted += char
+        
+        highlighted
+      else
+        reg: "(${RegExp.escape(highlight)})"
+        text.replace(new RegExp(reg, "gi"), '<em>$1</em>')
     
     matching_completions: (text) ->
-      reg: new RegExp(RegExp.escape(text), "i")
+      if @multiselect.options.complex_search
+        reg: ""
+        for char in text
+          reg += RegExp.escape(char) + ".*"
+        
+        reg: new RegExp(reg, "i")
+      else
+        reg: new RegExp(RegExp.escape(text), "i")
       count: 0
       $.grep @completions, (c) =>
         return false if count >= @multiselect.options.max_complete_results
