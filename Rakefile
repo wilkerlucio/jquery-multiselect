@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'rubygems'
 require 'bundler'
 
@@ -6,8 +7,8 @@ Bundler.require
 
 desc "Compile CoffeeScripts and watch for changes"
 task :coffee do
-  coffee = IO.popen 'coffee -wc --no-wrap src/*.coffee -o js 2>&1'
-  
+  coffee = IO.popen 'coffee -wc --no-wrap -o js src/*.coffee 2>&1'
+
   while line = coffee.gets
     puts line
   end
@@ -18,7 +19,7 @@ task :build do
   content = File.read("js/jquery.multiselect.js")
   minyfied = JSMin.minify(content)
   version = File.read("VERSION")
-  
+
   licence = <<LIC
 /**
  * Copyright (c) 2010 Wilker Lúcio
@@ -36,7 +37,7 @@ task :build do
  * limitations under the License.
  */
 LIC
-  
+
   File.open("dist/jquery.multiselect.#{version}.min.js", "wb") do |f|
     f << licence
     f << minyfied
