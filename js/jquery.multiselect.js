@@ -317,7 +317,7 @@ var __bind = function(func, context) {
       if (this.multiselect.options.enable_new_options) {
         def = this.create_item("Add <em>" + this.query + "</em>");
         def.mouseover(__bind(function(e) {
-          return this.select_index(e, 0);
+          return this.select_index(0);
         }, this));
       }
       _ref = this.matches;
@@ -329,7 +329,7 @@ var __bind = function(func, context) {
           x = this.multiselect.options.enable_new_options ? i + 1 : i;
           item = this.create_item(this.highlight(option[0], this.query));
           return item.mouseover(__bind(function(e) {
-            return this.select_index(e, x);
+            return this.select_index(x);
           }, this));
         }).call(this);
       }

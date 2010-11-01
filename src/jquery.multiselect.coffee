@@ -290,12 +290,12 @@
 
         if @multiselect.options.enable_new_options
           def = @create_item("Add <em>" + @query + "</em>")
-          def.mouseover (e) => @select_index(e, 0)
+          def.mouseover (e) => @select_index(0)
 
         for option, i in @matches
           x = if @multiselect.options.enable_new_options then i + 1 else i
           item = @create_item(@highlight(option[0], @query))
-          item.mouseover (e) => @select_index(e, x)
+          item.mouseover (e) => @select_index(x)
 
         @matches.unshift([@query, @query]) if @multiselect.options.enable_new_options
 
