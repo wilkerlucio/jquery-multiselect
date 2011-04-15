@@ -397,8 +397,11 @@
         input.attr("id", this.id)
 
         completions = []
+        add         = []
+
         for option in this.options
           completions.push([option.innerHTML, option.value])
+          add.push([option.innerHTML, option.value]) if option.selected
 
         select_options = {
           completions: completions
@@ -409,7 +412,9 @@
 
         $(this).replaceWith(input)
 
-        new $.MultiSelect(input, select_options)
+        multiselect = new $.MultiSelect(input, select_options)
+        multiselect.add(val) for val in add
+        multiselect
       else if this.tagName.toLowerCase() == "input" and this.type == "text"
         new $.MultiSelect(this, options)
 

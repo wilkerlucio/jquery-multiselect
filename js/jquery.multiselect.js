@@ -458,17 +458,21 @@
     $.fn.multiselect = function(options) {
       options != null ? options : options = {};
       return $(this).each(function() {
-        var completions, input, option, select_options, _i, _len, _ref;
+        var add, completions, input, multiselect, option, select_options, val, _i, _j, _len, _len2, _ref;
         if (this.tagName.toLowerCase() === "select") {
           input = $(document.createElement("input"));
           input.attr("type", "text");
           input.attr("name", this.name);
           input.attr("id", this.id);
           completions = [];
+          add = [];
           _ref = this.options;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             option = _ref[_i];
             completions.push([option.innerHTML, option.value]);
+            if (option.selected) {
+              add.push([option.innerHTML, option.value]);
+            }
           }
           select_options = {
             completions: completions,
@@ -476,7 +480,12 @@
           };
           $.extend(select_options, options);
           $(this).replaceWith(input);
-          return new $.MultiSelect(input, select_options);
+          multiselect = new $.MultiSelect(input, select_options);
+          for (_j = 0, _len2 = add.length; _j < _len2; _j++) {
+            val = add[_j];
+            multiselect.add(val);
+          }
+          return multiselect;
         } else if (this.tagName.toLowerCase() === "input" && this.type === "text") {
           return new $.MultiSelect(this, options);
         }
