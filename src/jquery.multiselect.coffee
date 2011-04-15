@@ -41,7 +41,7 @@
       @input = $(element)
       @initialize_elements()
       @initialize_events()
-      @parse_value()
+      @parse_value(0, true)
 
     initialize_elements: ->
       # hidden input to hold real value
@@ -108,13 +108,13 @@
     values_real: ->
       $.map @values, (v) -> v[1]
 
-    parse_value: (min) ->
-      min ?= 0
+    parse_value: (min = 0, checkKey = false) ->
       values = @input.val().split(@options.separator)
 
       if values.length > min
         for value in values
-          @add [value, value] if value.present()
+          label = if checkKey then @autocomplete.labelForValue(value) else value
+          @add [label, value] if value.present()
 
         @input.val("")
         @autocomplete.search()
@@ -255,6 +255,14 @@
           [[value.caption, value.value]]
         else
           console.error "Invalid option #{value}" if console
+
+    labelForValue: (value) ->
+      for completion in @completions
+        [label, val] = completion
+
+        return label if val == value
+
+      value
 
     create_elements: ->
       @container = $(document.createElement("div"))

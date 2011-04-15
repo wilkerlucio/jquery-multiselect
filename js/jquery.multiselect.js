@@ -29,7 +29,7 @@
         this.input = $(element);
         this.initialize_elements();
         this.initialize_events();
-        this.parse_value();
+        this.parse_value(0, true);
       }
       MultiSelect.prototype.initialize_elements = function() {
         this.hidden = $(document.createElement("input"));
@@ -91,15 +91,21 @@
           return v[1];
         });
       };
-      MultiSelect.prototype.parse_value = function(min) {
-        var value, values, _i, _len;
-        min != null ? min : min = 0;
+      MultiSelect.prototype.parse_value = function(min, checkKey) {
+        var label, value, values, _i, _len;
+        if (min == null) {
+          min = 0;
+        }
+        if (checkKey == null) {
+          checkKey = false;
+        }
         values = this.input.val().split(this.options.separator);
         if (values.length > min) {
           for (_i = 0, _len = values.length; _i < _len; _i++) {
             value = values[_i];
+            label = checkKey ? this.autocomplete.labelForValue(value) : value;
             if (value.present()) {
-              this.add([value, value]);
+              this.add([label, value]);
             }
           }
           this.input.val("");
@@ -277,6 +283,18 @@
             }
           }
         });
+      };
+      AutoComplete.prototype.labelForValue = function(value) {
+        var completion, label, val, _i, _len, _ref;
+        _ref = this.completions;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          completion = _ref[_i];
+          label = completion[0], val = completion[1];
+          if (val === value) {
+            return label;
+          }
+        }
+        return value;
       };
       AutoComplete.prototype.create_elements = function() {
         this.container = $(document.createElement("div"));
