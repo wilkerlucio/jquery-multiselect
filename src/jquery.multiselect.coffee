@@ -36,6 +36,7 @@
         max_complete_results: 5
         enable_new_options:   true
         complex_search:       true
+        title:                null
 
         # callbacks
         afterChange: ->
@@ -71,7 +72,7 @@
     initialize_events: ->
       # create helpers
       @selection = new $.MultiSelect.Selection(@input)
-      @resizable = new $.MultiSelect.ResizableInput(@input)
+      @resizable = new $.MultiSelect.ResizableInput(@input, @options.title)
       @observer = new $.MultiSelect.InputObserver(@input)
       @autocomplete = new $.MultiSelect.AutoComplete(this, @options.completions)
 
@@ -219,8 +220,9 @@
 
   # Resizable Input Helper
   class $.MultiSelect.ResizableInput
-    constructor: (element) ->
+    constructor: (element, title) ->
       @input = $(element)
+      @input.attr('title', title) if title
       @create_measurer()
       @input.keypress (e) => @set_width(e)
       @input.keyup (e) => @set_width(e)
