@@ -23,6 +23,7 @@
           max_complete_results: 5,
           enable_new_options: true,
           complex_search: true,
+          title: null,
           afterChange: function() {},
           afterAdd: function() {},
           afterRemove: function() {}
@@ -50,7 +51,7 @@
       };
       MultiSelect.prototype.initialize_events = function() {
         this.selection = new $.MultiSelect.Selection(this.input);
-        this.resizable = new $.MultiSelect.ResizableInput(this.input);
+        this.resizable = new $.MultiSelect.ResizableInput(this.input, this.options.title);
         this.observer = new $.MultiSelect.InputObserver(this.input);
         this.autocomplete = new $.MultiSelect.AutoComplete(this, this.options.completions);
         this.input.click(__bind(function(e) {
@@ -230,8 +231,11 @@
       return Selection;
     })();
     $.MultiSelect.ResizableInput = (function() {
-      function ResizableInput(element) {
+      function ResizableInput(element, title) {
         this.input = $(element);
+        if (title) {
+          this.input.attr('title', title);
+        }
         this.create_measurer();
         this.input.keypress(__bind(function(e) {
           return this.set_width(e);
