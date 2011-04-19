@@ -22,7 +22,10 @@
           completions: [],
           max_complete_results: 5,
           enable_new_options: true,
-          complex_search: true
+          complex_search: true,
+          afterChange: function() {},
+          afterAdd: function() {},
+          afterRemove: function() {}
         };
         $.extend(this.options, options || {});
         this.values = [];
@@ -120,7 +123,7 @@
         }
       };
       MultiSelect.prototype.add = function(value) {
-        var a, close;
+        var a, close, oldValues;
         if ($.inArray(value[1], this.values_real()) > -1) {
           return;
         }
@@ -128,6 +131,7 @@
           return;
         }
         value[1] = value[1].trim();
+        oldValues = this.values.slice(0);
         this.values.push(value);
         a = $(document.createElement("a"));
         a.addClass("bit bit-box");
@@ -146,9 +150,13 @@
         }, this));
         a.append(close);
         this.input_wrapper.before(a);
-        return this.refresh_hidden();
+        this.refresh_hidden();
+        this.options.afterAdd(this, value);
+        return this.options.afterChange(this, oldValues);
       };
       MultiSelect.prototype.remove = function(value) {
+        var oldValues;
+        oldValues = this.values.slice(0);
         this.values = $.grep(this.values, function(v) {
           return v[1] !== value[1];
         });
@@ -157,7 +165,9 @@
             return $(this).remove();
           }
         });
-        return this.refresh_hidden();
+        this.refresh_hidden();
+        this.options.afterRemove(this, value);
+        return this.options.afterChange(this, oldValues);
       };
       MultiSelect.prototype.refresh_hidden = function() {
         return this.hidden.val(this.values_real().join(this.options.separator));

@@ -15,27 +15,34 @@
 (($) ->
   KEY = {
     BACKSPACE: 8
-    TAB: 9
-    RETURN: 13
-    ESCAPE: 27
-    SPACE: 32
-    LEFT: 37
-    UP: 38
-    RIGHT: 39
-    DOWN: 40
-    COLON: 188
-    DOT: 190
+    TAB:       9
+    RETURN:    13
+    ESCAPE:    27
+    SPACE:     32
+    LEFT:      37
+    UP:        38
+    RIGHT:     39
+    DOWN:      40
+    COLON:     188
+    DOT:       190
   }
 
   class $.MultiSelect
     constructor: (element, options) ->
       @options = {
-        separator: ","
-        completions: []
+        # options
+        separator:            ","
+        completions:          []
         max_complete_results: 5
-        enable_new_options: true
-        complex_search: true
+        enable_new_options:   true
+        complex_search:       true
+
+        # callbacks
+        afterChange: ->
+        afterAdd:    ->
+        afterRemove: ->
       }
+
       $.extend(@options, options || {})
       @values = []
       @input = $(element)
@@ -131,6 +138,7 @@
       return if value[0].blank()
 
       value[1] = value[1].trim()
+      oldValues = @values.slice(0)
       @values.push(value)
 
       a = $(document.createElement("a"))
@@ -149,11 +157,19 @@
       @input_wrapper.before(a)
       @refresh_hidden()
 
+      @options.afterAdd(this, value)
+      @options.afterChange(this, oldValues)
+
     remove: (value) ->
+      oldValues = @values.slice(0)
+
       @values = $.grep @values, (v) -> v[1] != value[1]
       @container.find("a.bit-box").each ->
         $(this).remove() if $(this).data("value")[1] == value[1]
       @refresh_hidden()
+
+      @options.afterRemove(this, value)
+      @options.afterChange(this, oldValues)
 
     refresh_hidden: ->
       @hidden.val(@values_real().join(@options.separator))
